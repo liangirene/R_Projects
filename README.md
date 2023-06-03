@@ -12,8 +12,8 @@ The purpose of this project is to demonstrate proficiency in data visualization,
 - Replicate iPhone screen time's barchart and improve its visualization 
 - In our analysis of the Cal Women's Basketball 2021-2022 Game-by-Game Scores data, we aim to identify the crucial factors that contribute to victory in basketball games. By closely examining Cal's performance throughout the season, we can uncover the correlation between scoring points and successful shooting. To visualize this relationship and its impact on game outcomes, we have created a scatterplot. This graphic effectively represents the points scored by the Cal Women's Basketball team on the x-axis, while the y-axis represents Cal's field goal percentage. Furthermore, we have color-coded the data points based on the game's outcome: green for a win and red for a loss for Cal.
 
-## Project: Investment Simulator 
-View the published interactive shiny app (hosted by shiny.io) here: [Investment Simulator](https://ireneliang.shinyapps.io/InvestmentSimulator/)
+## Project: Investment Simulator
+View the published interactive shiny app (hosted by shiny.io): [Investment Simulator](https://ireneliang.shinyapps.io/InvestmentSimulator/)
 
 This project consists of two main components:
 - In the first section, I focused on defining important financial math formulas such as future value and ordinary annuity. In addition, I conducted 50 simulations of a 10-year investment period in a Total Stock Market index fund. To enhance understanding and analysis, I created a comprehensive timeline visualization for these simulations.
@@ -32,7 +32,7 @@ There are 4 outputs:
 
 
 ## Project: Text Analysis of The Simpsons Transcripts 
-View the published interactive shiny app (hosted by shiny.io) here: [The Simpsons Transcripts](https://ireneliang.shinyapps.io/TheSimpsonsTranscripts/)
+View the published interactive shiny app (hosted by shiny.io): [The Simpsons Transcripts](https://ireneliang.shinyapps.io/TheSimpsonsTranscripts/)
 
 This project analyzes The Simpsons' Transcript dataset, comprising characters, locations, episode details, and script lines from around 600 episodes of the show dating back to 1989. I conducted both the word frequency and sentiment analysis on the dataset.
 

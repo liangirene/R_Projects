@@ -1,0 +1,166 @@
+---
+title: "hw4-irene-liang"
+author: "Irene Liang"
+date: "2022-10-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(plotly)
+```
+
+# 1) Future Value (with compound interest)
+
+## 1.1) Function future_value()
+
+The Future Value (FV) with compound interest is given by:
+
+$$
+\begin{equation} \text{FV} = \text{P}\left(1+\frac{r}{k}\right)^{nk} \end{equation}
+$$
+
+```{r}
+#' @title Future Value
+#' @description computes the future value of an investment
+#' @param principal initial amount
+#' @param rate annual interest rate (or annual rate of return)
+#' @param n number of years
+#' @param k number of compounding periods per year
+#' @return future value of investment
+future_value <- function(principal = 100, r = 0.01, n = 1, k = 1){
+  principal * (1 + r/k)^(n*k)
+}
+```
+
+## 1.2) Test out the future_value() function
+
+```{r}
+future_value(principal = 1000, r = 0.025, n = 3, k = 1)
+```
+
+# 2) Future Value of Ordinary Annuity
+
+The Future Value of an Ordinary Annuity is given by:
+
+$$
+\begin{equation} \text{FV} = \text{PMT} \times \frac{ \left(1+\frac{r}{k}\right)^{nk} - 1}{r/k}\end{equation}
+$$ 
+
+Notice that if r = 0 then:
+$$
+\begin{equation} \text{FV} = \text{PMT} \times nk \end{equation}
+$$
+
+## 2.1) Function annuity()
+
+```{r}
+#' @title Future Value of Ordinary Annuity
+#' @description Computes the future value of an ordinary annuity
+#' @param pmt periodic contribution made at the end of each period
+#' @param r annual interest rate (i.e. annual rate of return)
+#' @param n number of years
+#' @param k number of compounding periods per year
+#' @return future value of ordinary annuity
+
+annuity <- function(pmt = 100, r = 0.01, n = 1, k = 12){
+  if (r==0){
+    fv_annuity <- pmt*n*k
+  }
+  else fv_annuity <- pmt * ((1 + r/k)^(n*k) - 1) / (r / k)
+  return(fv_annuity)
+}
+```
+
+## 2.2) Use your function annuity() to find how much money Mrs. Savingswood will have at the end of 10 years.
+
+```{r}
+annuity(pmt = 100, r = 0.05, n = 10, k = 12)
+```
+
+# 3) Combo: Future Value and Ordinary Annuity
+
+## 3.1) Investment table for a 10-year period
+
+```{r}
+investment_over_yr <- vector(mode="numeric", length = 11)
+for(n in 1:11){
+  combo <- round(future_value(principal = 1000, r = 0.0755, n = n-1, k = 1) + 
+                   annuity(pmt = 720, r = 0.0755, n=n-1, k = 1), digits = 2)
+  investment_over_yr[n] <- combo
+}
+
+investment_10yr <- data.frame(year = 0:10,
+                              amount = investment_over_yr)
+investment_10yr
+```
+
+# 4) Simulating Investing in a Total Stock Market index fund
+
+## 4.1) 50 simulations of a 10-year investment period
+
+```{r}
+initial_amount = 1000
+num_years = 10
+num_simulations = 50
+annual_return = 0.1
+annual_volatility = 0.18
+set.seed(12345)
+
+# initialize matrix to store outputs 
+balances = matrix(0, nrow = num_years + 1, ncol = num_simulations)
+
+for (sim in 1:num_simulations) {
+  aux_balance = rep(initial_amount, num_years + 1) # initialize vector to store outputs 
+  return_rates = rnorm(num_years, mean = annual_return, sd = annual_volatility)
+  for (year in 1:num_years) {
+    aux_balance[year + 1] = aux_balance[year] * (1 + return_rates[year]) + 360 # compound previous balance for one year
+    }
+  balances[ ,sim] = aux_balance
+}
+
+rownames(balances) = 0:num_years
+colnames(balances) = paste0("sim", 1:num_simulations)
+names(dimnames(balances)) <- c("year", "")
+balances[, 1:3] # Display the first 3 columns of the balance matrix
+```
+
+## 4.2) Data Visualization
+
+```{r}
+# convert to data frame
+balances_df = as.data.frame(balances)
+balances_df <- balances_df %>% rowwise() %>% mutate(percentile25 = quantile(c_across(sim1:sim50), probs = 0.25),
+                                                     percentile50 = quantile(c_across(sim1:sim50), probs = 0.50),
+                                                     percentile75 = quantile(c_across(sim1:sim50), probs = 0.75))
+balances_df$year = 0:(nrow(balances)-1)
+
+# reshape table into "tall" or "long" format
+balances_df_tall = pivot_longer(
+  balances_df, 
+  cols = starts_with(c("sim", "percentile")),
+  names_to = "simulation_percentile", 
+  values_to = "amount_stat")
+
+# indicator for whether the row is a simulation
+balances_df_tall$indicator <- str_detect(balances_df_tall$simulation_percentile, 'sim') 
+
+timelines = ggplot(data = balances_df_tall, aes(x = year, y = amount_stat, group = simulation_percentile, 
+                                                color = indicator, alpha = indicator), show.legend = FALSE) + 
+  geom_line() +
+  theme_minimal() +
+  scale_alpha_manual(values = c('TRUE' = 0.1, 'FALSE' = 1)) +
+  guides(color = 'none', alpha = 'none') +
+  scale_color_manual(values = c("red", "black")) + 
+  annotate(geom="text", label="25th Percentile", x=9.6, y=7000, color = "red", size = 3) +
+  annotate(geom="text", label="50th Percentile", x=9.6, y=8800, color = "red", size = 3) +
+  annotate(geom="text", label="75th Percentile", x=9.6, y=11200, color = "red", size = 3) +
+  theme(legend.position='none') +
+  labs(y = "balance ($)", x = "years") +
+  ggtitle("Timeline for 50 Simulations of a 10-year Investment Period")
+
+ggplotly(timelines)
+```

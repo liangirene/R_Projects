@@ -1,0 +1,210 @@
+---
+title: "hw3-irene-liang"
+author: "Irene Liang"
+date: "2022-10-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # includes dplyr, ggplot2 and other pkgs
+library(lubridate) # for working with dates
+library(tidyr)
+library(dplyr)
+library(chron)
+```
+
+# Graphic from FiveThirtyEight
+
+## a) Include a screenshot of the graphic in your report.
+
+```{r out.width="85%", out.height="85%", echo = FALSE, fig.align="center", fig.cap="How Black Americans Reshaped Politics In Georgia"}
+knitr::include_graphics('Atlanta_Black_Voters.png')
+```
+
+## b) Also, include a link of the graphic's webpage, and the names of the authors/designers of the related article.
+
+[How Black Americans Reshaped Politics In Georgia (graphic's webpage)](https://fivethirtyeight.com/features/how-black-americans-reshaped-politics-in-georgia/)
+
+Names of the article's authors/designers:
+
+-   Visual journalist: Elena Mejía
+
+-   Politics reporter: Alex Samuels
+
+## c) Description/explanation of its context
+
+-   The data shows the change in share of black and white voters from 2016 to 2020, by counties in Atlanta's metro area that Joe Biden won in 2020. Thus, each county in Atlanta's metro area (i.e. Henry, Gwinnett, Douglas,...) has data on the percent change for both Black and white voters from 2016 to 2020.
+
+-   Yes, there is a time period associated to it, and it is from 2016 to 2020.
+
+-   The type of graphic is a horizontal barchart where the x-axis is the percent change and each county has an orange bar for Black voters and a green bar white voters. Further, there is also a map of the area covered by counties that the data includes.
+
+## d) What color scheme (if any) is being used in the graphic?
+
+The barchart graphic uses an orange bar for Black voters and a green bar for white voters. The contrasting color scheme is being used where orange is warm and green is cool. Further, the area covered by counties map uses a monotone black and grey color scheme to highlight the counties in Atlanta's metro area that the data includes.
+
+## e) Taking into account the so-called "Data-Ink ratio", explain whether the graphic seems to be maximizing this ratio or not
+
+The graphics has a high dark-ink ratio since a large proportion of ink on the graphic presents crucial data-information. Thus, the graphic seems to be maximizing this ratio. The usage of only two inks (orange and green) shows that the author tried to avoid unnecessary data ink. Further, the background is plain white while the title, subtitle, and axis/bar labeling are all black.
+
+## f) Describe the things that you find interesting about the chosen graphic
+
+I find the choice of contrasting colors very appealing since it shows a clear distinction between the two categories on the barchart. Further, the way in which the two categories, Black vs white voters, has been encoded graphically is interesting: they were labeled directly on the chart's subtitle instead of on an additional side legend. This simplifies the presentation of the graphic, making the graphic easier to understand. Lastly, the concise analysis on data points with a negative percent change as well as a one line conclusion on the right hand side of the graphic allows for efficient communication.
+
+# 2) Screen Time Graph
+
+## 2.1) Graphic's Assessment
+
+Good about this data visualization:
+
+-   The color choice of the black background provides a contrast to the main data.
+
+-   Summary of weekly screen time and percent change from last week on the top of the screen as well as the green horizontal bar of the weekly average are included. These allow the user to effectively understand the overall trend and statistics of the graph and use them for comparison.
+
+-   The blue and orange contrasting color scheme of the categories (social, entertainment, creativity) allows the user to easily compare the kinds of apps they spend the most/least time on.
+
+Bad about this data visualization:
+
+-   Other than the social category that is stacked at the very bottom, the overlapping stacked bars in the middle make it difficult to compare screen time of categories across different days of the week.
+
+-   The grey category isn't labeled and seems to blend in with the black background.
+
+## 2.2) Replicate Screen Time's Barchart
+
+```{r}
+# Create screen time dataframe
+screen_time <- data.frame (Days  = c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                                     "Thursday", "Friday", "Saturday"),
+                           Social = round((c(107, 100, 46, 88, 117, 69, 98))/60, 5),
+                           Entertainment = round((c(29, 22, 32, 14, 0, 1, 0))/60, 5),
+                           Creativity = round((c(1, 3, 8, 1, 1, 1, 9))/60, 5),
+                           Other = round((c(101, 22, 69, 44, 72, 39, 46))/60, 5)
+                           )
+avg = sum(rowSums(screen_time[, -1]))/7
+# Make Days an ordered factor
+screen_time$Days <- factor(screen_time$Days, levels = screen_time$Days)
+
+# Gather columns into key-value pairs
+screen_time_gather <- screen_time %>% 
+  gather(Category, Time, Social:Other)
+screen_time_gather$Category <- factor(screen_time_gather$Category, levels = c("Other", "Creativity", "Entertainment", "Social"))
+
+ggplot(screen_time_gather, aes(x = Days, y = Time, fill = Category)) + 
+  geom_bar(position="stack", stat="identity") + 
+  geom_hline(yintercept = avg, linetype='dashed', color = "chartreuse3") +
+  theme(panel.background = element_rect(fill = 'black'),
+        panel.grid.major = element_line(color = 'grey'),
+        panel.grid.minor = element_line(color = 'black'),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position="none") +
+  annotate(geom="text", label="avg", x=7.4, y=avg, vjust=-1, color ="chartreuse3") +
+  annotate(geom="text", label="Daily Average", x=1.3, y=5, color = "gray", size = 6) +
+  annotate(geom="text", label="2h 38m", x=1.35, y=4.5, color = "white", size = 12) +
+  annotate(geom="text", label="↓ 28% from last week", x=6.3, y=4.5, color = "grey", size = 6) +
+  
+  annotate(geom="text", label="Social", x=1, y=-0.6, color = "deepskyblue1", size = 5) +
+  annotate(geom="text", label="10h 21m", x=1.1, y=-1, color = "white", size = 5) +
+  
+  annotate(geom="text", label="Entertainment", x=3.8, y=-0.6, color = "cyan1", size = 5) +
+  annotate(geom="text", label="1h 40m", x=3.5, y=-1, color = "white", size = 5) +
+  
+  annotate(geom="text", label="Creativity", x=6.5, y=-0.6, color = "darkorange", size = 5) +
+  annotate(geom="text", label="24m", x=6.3, y=-1, color = "white", size = 5) +
+  
+  scale_fill_manual(values = c("azure4", "darkorange", "cyan1", "deepskyblue1")) +
+  scale_x_discrete(labels= c("S", "M", "T", "W", "T", "F", "S")) +
+  scale_y_continuous(labels=c("0", " ", " ", " ", "4h"), breaks=0:4)
+```
+
+## 2.3) Improved Alternative Screen Time Visualization
+
+```{r}
+orig_time <- screen_time_gather$Time * 60
+hour_min <- substr(times((orig_time%/%60 +  orig_time%%60 /60)/24), 1, 5)
+screen_time_gather$hour_min <- hour_min
+
+ggplot(screen_time_gather, aes(x = Days, y = Time, fill = Category, label = hour_min)) + 
+  geom_bar(position="stack", stat="identity") +
+  geom_text(size = 3, position = position_stack(vjust = 0.45), check_overlap = TRUE) +
+  geom_hline(yintercept = avg, linetype='dashed', color = "chartreuse3") +
+  theme(panel.background = element_rect(fill = 'black'),
+        panel.grid.major = element_line(color = 'grey'),
+        panel.grid.minor = element_line(color = 'black'),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position="none") +
+  annotate(geom="text", label="avg", x=7.4, y=avg, vjust=-1, color ="chartreuse3") +
+  annotate(geom="text", label="Daily Average", x=1.3, y=5, color = "gray", size = 6) +
+  annotate(geom="text", label="2h 38m", x=1.35, y=4.5, color = "white", size = 12) +
+  annotate(geom="text", label="↓ 28% from last week", x=6.3, y=4.5, color = "grey", size = 6) +
+  
+  annotate(geom="text", label="Social", x=0.9, y=-0.6, color = "deepskyblue1", size = 5) +
+  annotate(geom="text", label="10h 21m", x=1, y=-1, color = "white", size = 5) +
+  
+  annotate(geom="text", label="Entertainment", x=3.2, y=-0.6, color = "cyan1", size = 5) +
+  annotate(geom="text", label="1h 40m", x=2.9, y=-1, color = "white", size = 5) +
+  
+  annotate(geom="text", label="Creativity", x=5.2, y=-0.6, color = "darkorange", size = 5) +
+  annotate(geom="text", label="24m", x=5, y=-1, color = "white", size = 5) +
+  
+  annotate(geom="text", label="Other", x=6.9, y=-0.6, color = "azure4", size = 5) +
+  annotate(geom="text", label="6h 33m", x=7, y=-1, color = "white", size = 5) +
+  
+  scale_fill_manual(values = c("azure4", "darkorange", "cyan1", "deepskyblue1")) +
+  scale_x_discrete(labels= c("S", "M", "T", "W", "T", "F", "S")) +
+  scale_y_continuous(labels=c("0", " ", " ", " ", "4h"), breaks=0:4)
+```
+
+My proposal improves the original graphic since:
+
+-   One of the issues of the original graphic is that it's difficult to understand the trends of the middle bars. The solution I implemented is to label each stacked bar so that the reader can quickly know exactly how much time they spent on each category. From this, they can compare one of the day's time for a specific category to that of another day's. To do this, I first converted the time spent from minutes to the standardized hours and minutes format. Then, I used the 'geom_text' function to label each stack with the converted time, which are stored in the column "hour_min".
+
+-   Another issue of the original graphics is that the grey category isn't labeled. The solution I implemented is to add a label for the grey bars, which correspond to the "Other" category. Further, just like the other three categories, I also added the total time the user spent on the "Other" category on that week at the bottom of the graphic.
+
+# 3) Cal Women's Basketball 2021-2022 Game-by-Game Scores
+
+```{r}
+games <- read.csv(
+  file = "cal-women-basketball-21-22.csv",
+  stringsAsFactors = FALSE,
+  colClasses = c(
+    "numeric", # Game
+    "character", # Opponent
+    "character", # Home_Away
+    "Date", # Date
+    "numeric", # Cal_Score
+    "numeric", # Opp_Score,
+    "numeric", # FG_attempted,
+    "numeric", # FG_made,
+    "numeric", # FG3_attempted,
+    "numeric" # FG3_made,
+    ))
+```
+
+## 3.1) Data Visualization
+
+```{r}
+games$fg_percent <- (games$FG_made/games$FG_attempted)*100
+games$Cal_Victory <- games$Cal_Score > games$Opp_Score
+
+ggplot(games, aes(x = Cal_Score, y = fg_percent)) +
+  geom_point(aes(color=Cal_Victory), size = 2.5) +
+  labs(y= "Field Goal Percentage", x = "Points Scored by Cal") +
+  ggtitle("Distribution of Points Scored and FG% for Cal (21-22 Season)") +
+  geom_smooth(method=lm) +
+  scale_color_manual(name = "Cal Win/Loss", labels = c("Win", "Loss"), values = c("#00BE67", "brown2"))
+```
+
+The above graph aims to investigate the general keys to victory in a basketball game, specifically, through the Cal's game-by-game performance and the relationship between scoring points and making baskets over the 2021-2022 season. The graphic displays a scatterplot of points scored by the Cal Women's Basketball team on the x-axis against Cal's field goal percentage on the y-axis, colored by the game's outcome of a win (green) or loss (red) for Cal.
+
+The graphic is based on the following 4 variables (i.e. columns): 'FG_made' 'FG_attempted' 'Cal_Score' and 'Opp_Score'. First, I calculated the field goal percentage, which is the proportion of successful baskets made out of all attempts, and multiply this by 100 to convert it into a percentage. Once this data is calculated, save it in the new column 'fg_percent'. Then, we add an indicator column, 'Cal_Victory' for whether Cal has won or lost that game.
+
+From the graph, we can infer the following:
+
+-   The more points scored by the Cal Women's basketball team and the more efficient they are with their shot attempts (higher field goal percentage), the more likely they are to win the game.
+
+-   As shown by the fitted linear model, there is a positive correlation between points scored and field goal percentage, implying that the more efficient the Cal team is at making baskets, the more points they would end up scoring in total.
+
+Overall, this graph confirms the perceived intuition behind keys to winning a game. It provides a fundamental background in basketball statistics as well as how points scored and percentage of basket scored play in the outcome of the game.

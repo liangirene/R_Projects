@@ -4,7 +4,9 @@
 - This project entails the study of attributes amd volume of tropical storm occurances observed in the North Atlantic Storm Basin. The data comes from the International Best Track Archive for Climate Stewardship (IBTrACS) website.
 - The data types for the 16 imported columns are as follows:
 <pre>
-        <li> SEASON, NUMBER, WMO_WIND, WMO_PRES, DIST2LAND, and LANDFALL must be of type "integer" </li><li> LAT and LON must be of type "double" or "real" </li><li> The rest of the columns must be of type "character" </li>
-   </ul>
- </pre>
+        <li tabindex="0"> SEASON, NUMBER, WMO_WIND, WMO_PRES, DIST2LAND, and LANDFALL must be of type "integer" </li>
+        <li tabindex="0"> LAT and LON must be of type "double" or "real" </li>
+        <li tabindex="0"> The rest of the columns must be of type "character" </li>
+                
+</pre>
 

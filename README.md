@@ -3,10 +3,9 @@
 ## Project: IBTrACS Trend Analysis
 - This project entails the study of attributes amd volume of tropical storm occurances observed in the North Atlantic Storm Basin. The data comes from the International Best Track Archive for Climate Stewardship (IBTrACS) website.
 - The data types for the 16 imported columns are as follows:
-<pre>
-        <li tabindex="0"> SEASON, NUMBER, WMO_WIND, WMO_PRES, DIST2LAND, and LANDFALL must be of type "integer" </li>
-        <li tabindex="0"> LAT and LON must be of type "double" or "real" </li>
-        <li tabindex="0"> The rest of the columns must be of type "character" </li>
+  - `SEASON`, `NUMBER`, `WMO_WIND`, `WMO_PRES`, `DIST2LAND`, and `LANDFALL` must be of type "integer"
+  - `LAT` and `LON` must be of type "double" or "real"
+  - The rest of the columns must be of type "character"
                 
 </pre>
 
@@ -18,6 +17,6 @@ The purpose of this project is to demonstrate proficiency in data visualization,
 ## Project: Investment Simulator 
 This project consists of two main components:
 - In the first section, we focused on defining important financial math formulas such as future value and ordinary annuity. In addition, we conducted 50 simulations of a 10-year investment period in a Total Stock Market index fund. To enhance understanding and analysis, we created a comprehensive timeline visualization for these simulations.
-- In the section section, we leveraged the previously defined formulas to develop an investment simulator through the use of a Shiny app. This interactive application enhances the user experience and facilitates practical exploration of investment scenarios.
+- In the section section, we leveraged the previously defined formulas to develop an investment simulator through the use of a **Shiny** app. This interactive application enhances the user experience and facilitates practical exploration of investment scenarios.
 
 
